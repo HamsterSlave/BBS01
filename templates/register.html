@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <form id="myform">
+                {% csrf_token %}
+                <br>
+                <br>
+                <div class="form-group" style="display: flex;justify-content: center;align-content: center;height: 100%">
+                    <label for="myfile">
+                        <img src="{% static 'img/default.jpg' %}" alt="" id="myimg" width="200" style="border-radius: 50%">
+                    </label>
+                    <input type="file" id="myfile" name="avatar" style="display: none">
+                </div>
+                {% for form in form_obj %}
+                    <div class="form-group">
+                        <label>{{ form.label }}</label>
+                        {{ form }}
+                        <span style="color: red" class="pull-right"></span>
+                    </div>
+                {% endfor %}
+                <br>
+                <a href="{% url 'home' %}" class="btn btn-info ">首页</a>
+                <input type="button" class="btn btn-primary pull-right" value="注册" id="id_commit">
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $("#myfile").change(function (){
+        //文件阅读器对象
+        //实例化一个文件阅读器对象
+        let myFileReaderObj = new FileReader();
+        //获取用户上床的用户头像文件
+        let fileObj = $(this)[0].files[0]
+        //将文件交给阅读器对象读取
+        myFileReaderObj.readAsDataURL(fileObj)  // 异步操作 IO操作
+        myFileReaderObj.onload = function (){
+            $("#myimg").attr('src', myFileReaderObj.result)
+        }
+    })
+    $("#id_commit").click(function () {
+        let formDataObj = new FormData();
+        $.each($("#myform").serializeArray(), function (index, obj) {
+            formDataObj.append(obj.name, obj.value)
+        });
+        //添加文件对象
+        formDataObj.append('avatar', $("#myfile")[0].files[0])
+        //发送ajax请求
+        $.ajax({
+            url:'',
+            type:'post',
+            data:formDataObj,
+            contentType:false,
+            processData:false,
+            success:function (args){
+                if (args.code == 1000) {
+                    window.location.href = args.url;
+                } else {
+                    {#console.log(args.msg)#}
+                    $.each(args.msg, function (index, obj) {
+                        let targetId = '#id_' + index;
+                        $(targetId).next().text(obj[0]).parent().addClass('has-error')
+                    });
+                }
+            }
+        })
+    })
+    $('input').focus(function () {
+        $(this).next().text('').parent().removeClass('has-error')
+    });
+</script>
+</body>
+</html>

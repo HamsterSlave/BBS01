@@ -1,0 +1,97 @@
+{% extends 'backend/backend_base.html' %}
+
+{% block content %}
+    <h3>添加文章</h3>
+    <form action="" method="post" class="form-group">
+        {% csrf_token %}
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                           aria-expanded="true" aria-controls="collapseOne">
+                            文章标题
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <div class="input-group input-group-lg">
+                            <input type="text" name="title" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            文章内容
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+                        <textarea id="id_content" name="content" style="width:100%;height:300px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            分类
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel"
+                     aria-labelledby="headingThree">
+                    <div class="panel-body">
+                        {% for category in category_list %}
+                            <input type="radio" value="{{ category.pk }}" name="category">{{ category.name }}&nbsp;
+                            &nbsp;&nbsp;
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            标签
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel"
+                     aria-labelledby="headingThree">
+                    <div class="panel-body">
+                        {% for tag in tag_list %}
+                            <input type="checkbox" value="{{ tag.pk }}" name="tag">{{ tag.name }}&nbsp;
+                            &nbsp;&nbsp;
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-danger">
+    </form>
+{% endblock %}
+{% block js %}
+    {% load static %}
+    <script charset="utf-8" src="{% static 'kindeditor-4.1.11-zh-CN/kindeditor/kindeditor-all-min.js' %}"></script>
+    <script charset="utf-8" src="{% static 'kindeditor-4.1.11-zh-CN/kindeditor/lang/zh-CN.js' %}"></script>
+    <script>
+        KindEditor.ready(function (K) {
+            window.editor = K.create('#id_content', {
+                uploadJson: '/upload_image/',
+                formatUploadUrl:false,
+                extraFileUploadParams: {
+                    'csrfmiddlewaretoken':'{{ csrf_token }}',
+                },
+            });
+        });
+    </script>
+{% endblock %}
